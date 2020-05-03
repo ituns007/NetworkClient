@@ -31,8 +31,8 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    api project(path: ":core")
-//    api "org.ituns.network:core:${CORE_VERSION}"
+//    api project(path: ":core")
+    api "org.ituns.network:core:${CORE_VERSION}"
 
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
