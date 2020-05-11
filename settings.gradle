@@ -1,5 +1,6 @@
 rootProject.name='NetworkClient'
 include ':app'
 include ':core'
-include ':okhttp'
 include ':faker'
+include ':okhttp-compat'
+include ':okhttp-stable'
