@@ -8,13 +8,15 @@ import java.util.HashMap;
 
 import okhttp3.HttpUrl;
 
-public class FakerUrl {
+class FakerUrl {
     private final Scheme none = new Scheme();
     private final HashMap<String, Scheme> schemes = new HashMap<>();
 
     public void append(String url, String resource) {
-        HttpUrl httpUrl = HttpUrl.parse(url);
-        if(httpUrl == null) {
+        HttpUrl httpUrl = null;
+        try {
+            httpUrl = HttpUrl.parse(url);
+        } catch (Exception e) {
             return;
         }
 
@@ -32,8 +34,10 @@ public class FakerUrl {
     }
 
     public boolean exists(String url) {
-        HttpUrl httpUrl = HttpUrl.parse(url);
-        if(httpUrl == null) {
+        HttpUrl httpUrl = null;
+        try {
+            httpUrl = HttpUrl.parse(url);
+        } catch (Exception e) {
             return false;
         }
 
@@ -51,8 +55,10 @@ public class FakerUrl {
     }
 
     public String proceed(String url) {
-        HttpUrl httpUrl = HttpUrl.parse(url);
-        if(httpUrl == null) {
+        HttpUrl httpUrl = null;
+        try {
+            httpUrl = HttpUrl.parse(url);
+        } catch (Exception e) {
             return null;
         }
 

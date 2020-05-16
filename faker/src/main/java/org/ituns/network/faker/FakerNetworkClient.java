@@ -10,7 +10,7 @@ import org.ituns.network.core.NetworkCode;
 import org.ituns.network.core.NetworkRequest;
 import org.ituns.network.core.NetworkResponse;
 
-public class FakerNetworkClient extends NetworkClient {
+public final class FakerNetworkClient extends NetworkClient {
     private static final String TAG = "FakerNetworkClient";
 
     private Handler mBackHandler;
@@ -44,7 +44,7 @@ public class FakerNetworkClient extends NetworkClient {
     }
 
     @Override
-    public NetworkResponse onRequestSync(NetworkRequest networkRequest) {
+    protected NetworkResponse onRequestSync(NetworkRequest networkRequest) {
         if(networkRequest == null) {
             logcat(isDebugMode,"network request is null.");
             return new NetworkResponse.Builder(networkRequest)
@@ -66,7 +66,7 @@ public class FakerNetworkClient extends NetworkClient {
     }
 
     @Override
-    public void onRequestAsync(NetworkRequest networkRequest, NetworkCallback callback) {
+    protected void onRequestAsync(NetworkRequest networkRequest, NetworkCallback callback) {
         if(networkRequest == null) {
             logcat(isDebugMode,"network request is null.");
             callback.onError(new NetworkResponse.Builder(networkRequest)

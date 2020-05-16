@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.List;
 import java.util.Map;
 
-public class NetworkUtils {
+class NetworkUtils {
     private static String TAG = "NetworkClient";
 
     public static void printNetworkRequest(NetworkRequest networkRequest, boolean debugMode) {

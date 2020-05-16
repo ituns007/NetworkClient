@@ -52,7 +52,7 @@ public class OkHttpNetworkClient extends NetworkClient {
     }
 
     @Override
-    public NetworkResponse onRequestSync(NetworkRequest networkRequest) {
+    protected NetworkResponse onRequestSync(NetworkRequest networkRequest) {
         if(networkRequest == null) {
             logcat(isDebugMode,"network request is null.");
             return new NetworkResponse.Builder(networkRequest)
@@ -92,7 +92,7 @@ public class OkHttpNetworkClient extends NetworkClient {
     }
 
     @Override
-    public void onRequestAsync(NetworkRequest networkRequest, NetworkCallback callback) {
+    protected void onRequestAsync(NetworkRequest networkRequest, NetworkCallback callback) {
         if(callback == null) {
             logcat(isDebugMode,"network callback is null.");
             return;

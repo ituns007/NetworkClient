@@ -1,0 +1,19 @@
+{
+  "code": 200,
+  "message": "Success",
+  "header":{
+    "cookie": [
+      "cookie1",
+      "cookie2"
+    ]
+  },
+  "body": {
+    "code": 0,
+    "message": "success",
+    "data": {
+      "key1": "value1",
+      "key2": "value2",
+      "key3": "value3"
+    }
+  }
+}

@@ -18,14 +18,14 @@ public abstract class NetworkClient {
         return response;
     }
 
-    public abstract NetworkResponse onRequestSync(NetworkRequest request);
+    protected abstract NetworkResponse onRequestSync(NetworkRequest request);
 
     public final void requestAsync(NetworkRequest request, NetworkCallback callback) {
         NetworkUtils.printNetworkRequest(request, isDebugMode);
         onRequestAsync(request, new NetworkCallbackImpl(callback, isDebugMode));
     }
 
-    public abstract void onRequestAsync(NetworkRequest request, NetworkCallback callback);
+    protected abstract void onRequestAsync(NetworkRequest request, NetworkCallback callback);
 
     private static class NetworkCallbackImpl implements NetworkCallback {
         private boolean isDebugMode;

@@ -4,7 +4,7 @@ android {
     compileSdkVersion COMPILE_SDK_VERSION as int
     defaultConfig {
         applicationId "${APPLICATION_ID}"
-        minSdkVersion MIN_SDK_VERSION as int
+        minSdkVersion MIN_SDK_STABLE_VERSION as int
         targetSdkVersion TARGET_SDK_VERSION as int
         versionCode APPLICATION_VERSION_CODE as int
         versionName "${APPLICATION_VERSION_NAME}"
@@ -32,4 +32,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "androidx.appcompat:appcompat:${APPCOMPAT_VERSION}"
     implementation "androidx.constraintlayout:constraintlayout:${CONSTRAINT_VERSION}"
+
+//    implementation project(path: ":faker")
+    implementation "org.ituns.network:faker:${NETWORK_FAKER_VERSION}"
+
+//    implementation project(path: ":okhttp-compat")
+//    implementation "org.ituns.network:okhttp-compat:${NETWORK_OKHTTP_COMPAT_VERSION}"
+
+//    implementation project(path: ":okhttp-stable")
+    implementation "org.ituns.network:okhttp-stable:${NETWORK_OKHTTP_STABLE_VERSION}"
 }

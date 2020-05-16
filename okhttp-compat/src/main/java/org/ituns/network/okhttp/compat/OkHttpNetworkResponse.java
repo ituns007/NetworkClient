@@ -9,7 +9,7 @@ import java.io.IOException;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class OkHttpNetworkResponse {
+class OkHttpNetworkResponse {
     private NetworkRequest mNetworkRequest;
 
     private OkHttpNetworkResponse(NetworkRequest networkRequest) {

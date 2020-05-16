@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontoptimize
+-keeppackagenames org.ituns.network.okhttp.compat
+
+-keep class org.ituns.network.okhttp.compat.OkHttpNetworkClient {
+    public <methods>;
+    protected <methods>;
+}
+
+-keep class org.ituns.network.okhttp.compat.R{ *; }
+-keep class org.ituns.network.okhttp.compat.R$* { public static <fields>; }

@@ -13,7 +13,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -32,7 +33,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 //    api project(path: ":core")
-    api "org.ituns.network:core:${CORE_VERSION}"
+    api "org.ituns.network:core:${NETWORK_CORE_VERSION}"
 
     api "com.squareup.okhttp3:okhttp:${OKHTTP_COMPAT_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_COMPAT_VERSION}"

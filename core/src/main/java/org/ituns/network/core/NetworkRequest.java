@@ -43,6 +43,7 @@ public class NetworkRequest {
         private Map<String, List<String>> headers;
 
         public Builder(String url) {
+            this.url = url;
             headers = new HashMap<>();
             method = NetworkMethod.GET;
         }
@@ -63,7 +64,7 @@ public class NetworkRequest {
         }
 
         public Builder header(String key, String value) {
-            if(TextUtils.isEmpty(key) || TextUtils.isEmpty(value)) {
+            if(TextUtils.isEmpty(key) || value == null) {
                 return this;
             }
 

@@ -1,6 +1,6 @@
 package org.ituns.network.okhttp.stable;
 
-public interface OkHttpNetworkConfig {
+interface OkHttpNetworkConfig {
     int TIME_OUT_CONNECT = 30;
     int TIME_OUT_READ = 30;
     int TIME_OUT_WRITE = 30;
