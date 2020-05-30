@@ -1,52 +1,26 @@
 package org.ituns.network.faker;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.util.Log;
-
 import org.ituns.network.core.NetworkCallback;
 import org.ituns.network.core.NetworkClient;
 import org.ituns.network.core.NetworkCode;
 import org.ituns.network.core.NetworkRequest;
 import org.ituns.network.core.NetworkResponse;
+import org.ituns.system.concurrent.BackTask;
+import org.ituns.toolset.loger.LogerClient;
 
 public final class FakerNetworkClient extends NetworkClient {
-    private static final String TAG = "FakerNetworkClient";
-
-    private Handler mBackHandler;
-    private HandlerThread mHandlerThread;
-
-    private FakerAdapter mFakerAdapter;
+    private final BackTask mBackTask;
+    private final FakerAdapter mFakerAdapter;
 
     public FakerNetworkClient(FakerAdapter fakeAdapter) {
-        mHandlerThread = new HandlerThread("FakerNetworkClient");
-        mHandlerThread.start();
-        mBackHandler = new Handler(mHandlerThread.getLooper());
+        mBackTask = new BackTask();
         mFakerAdapter = fakeAdapter;
-    }
-
-    public void release() {
-        HandlerThread handlerThread = mHandlerThread;
-        if(handlerThread != null) {
-            handlerThread.quit();
-            mHandlerThread = null;
-        }
-
-        Handler handler = mBackHandler;
-        if(handler != null) {
-            mBackHandler = null;
-        }
-
-        FakerAdapter fakerAdapter = mFakerAdapter;
-        if(fakerAdapter != null) {
-            mFakerAdapter = null;
-        }
     }
 
     @Override
     protected NetworkResponse onRequestSync(NetworkRequest networkRequest) {
         if(networkRequest == null) {
-            logcat(isDebugMode,"network request is null.");
+            mLogerClient.d("network request is null.");
             return new NetworkResponse.Builder(networkRequest)
                     .code(NetworkCode.ERROR_REQUEST)
                     .message("network request is null.")
@@ -55,7 +29,7 @@ public final class FakerNetworkClient extends NetworkClient {
 
         FakerAdapter fakerAdapter = mFakerAdapter;
         if(fakerAdapter == null) {
-            logcat(isDebugMode,"faker adapter is null.");
+            mLogerClient.d("faker adapter is null.");
             return new NetworkResponse.Builder(networkRequest)
                     .code(NetworkCode.ERROR_REQUEST)
                     .message("faker adapter is null.")
@@ -68,7 +42,7 @@ public final class FakerNetworkClient extends NetworkClient {
     @Override
     protected void onRequestAsync(NetworkRequest networkRequest, NetworkCallback callback) {
         if(networkRequest == null) {
-            logcat(isDebugMode,"network request is null.");
+            mLogerClient.d("network request is null.");
             callback.onError(new NetworkResponse.Builder(networkRequest)
                     .code(NetworkCode.ERROR_REQUEST)
                     .message("network request is null.")
@@ -78,7 +52,7 @@ public final class FakerNetworkClient extends NetworkClient {
 
         FakerAdapter fakerAdapter = mFakerAdapter;
         if(fakerAdapter == null) {
-            logcat(isDebugMode,"faker adapter is null.");
+            mLogerClient.d("faker adapter is null.");
             callback.onError(new NetworkResponse.Builder(networkRequest)
                     .code(NetworkCode.ERROR_REQUEST)
                     .message("faker adapter is null.")
@@ -86,18 +60,23 @@ public final class FakerNetworkClient extends NetworkClient {
             return;
         }
 
-        mBackHandler.post(new RequestAsyncTask(isDebugMode, fakerAdapter,
+        mBackTask.post(new RequestAsyncTask(mLogerClient, fakerAdapter,
                 networkRequest, callback));
     }
 
+    @Override
+    protected void onRelease() {
+        mBackTask.release();
+    }
+
     private static class RequestAsyncTask implements Runnable {
-        private boolean isDebugMode;
+        private LogerClient mLogerClient;
         private FakerAdapter mFakerAdapter;
         private NetworkRequest mNetworkRequest;
         private NetworkCallback mNetworkCallback;
 
-        public RequestAsyncTask(boolean isDebugMode, FakerAdapter fakerAdapter, NetworkRequest networkRequest, NetworkCallback networkCallback) {
-            this.isDebugMode = isDebugMode;
+        public RequestAsyncTask(LogerClient logerClient, FakerAdapter fakerAdapter, NetworkRequest networkRequest, NetworkCallback networkCallback) {
+            mLogerClient = logerClient;
             mFakerAdapter = fakerAdapter;
             mNetworkRequest = networkRequest;
             mNetworkCallback = networkCallback;
@@ -114,7 +93,7 @@ public final class FakerNetworkClient extends NetworkClient {
 
             FakerAdapter fakerAdapter = mFakerAdapter;
             if(fakerAdapter == null) {
-                logcat(isDebugMode,"faker adapter is null.");
+                mLogerClient.d("faker adapter is null.");
                 networkCallback.onError(new NetworkResponse.Builder(networkRequest)
                         .code(NetworkCode.ERROR_REQUEST)
                         .message("faker adapter is null.")
@@ -129,15 +108,10 @@ public final class FakerNetworkClient extends NetworkClient {
         }
 
         private void releaseAsyncTask() {
-            mFakerAdapter = null;
-            mNetworkRequest = null;
             mNetworkCallback = null;
-        }
-    }
-
-    private static void logcat(boolean debugMode, String msg) {
-        if(debugMode) {
-            Log.d(FakerNetworkClient.TAG, msg);
+            mNetworkRequest = null;
+            mFakerAdapter = null;
+            mLogerClient = null;
         }
     }
 }

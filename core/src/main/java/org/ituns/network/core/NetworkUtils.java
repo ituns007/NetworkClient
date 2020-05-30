@@ -1,35 +1,34 @@
 package org.ituns.network.core;
 
-import android.util.Log;
+import org.ituns.toolset.loger.LogerClient;
 
 import java.util.List;
 import java.util.Map;
 
 class NetworkUtils {
-    private static String TAG = "NetworkClient";
 
-    public static void printNetworkRequest(NetworkRequest networkRequest, boolean debugMode) {
-        if(!debugMode || networkRequest == null) {
+    public static void printNetworkRequest(LogerClient loger, NetworkRequest networkRequest) {
+        if(networkRequest == null) {
             return;
         }
 
-        logcat("Request URL=>" + networkRequest.url());
-        logcat("Request METHOD=>" + networkRequest.method().text());
+        loger.d("Request URL=>" + networkRequest.url());
+        loger.d("Request METHOD=>" + networkRequest.method().text());
 
         Map<String, List<String>> headers = networkRequest.headers();
         for(String key : headers.keySet()) {
             List<String> value = headers.get(key);
-            logcat("Request HEADER=>" + key + ":" + buildHeaderText(value));
+            loger.d("Request HEADER=>" + key + ":" + buildHeaderText(value));
         }
 
         String body = parseRequestBody(networkRequest);
         if(body != null) {
-            logcat("Request BODY=>" + body);
+            loger.d("Request BODY=>" + body);
         }
     }
 
-    public static void printNetworkResponse(NetworkResponse networkResponse, boolean debugMode) {
-        if(!debugMode || networkResponse == null) {
+    public static void printNetworkResponse(LogerClient loger, NetworkResponse networkResponse) {
+        if(networkResponse == null) {
             return;
         }
 
@@ -38,21 +37,17 @@ class NetworkUtils {
             return;
         }
 
-        logcat("Response URL=>" + networkRequest.url());
-        logcat("Response CODE=>" + networkResponse.code());
-        logcat("Response MSG=>" + networkResponse.message());
+        loger.d("Response URL=>" + networkRequest.url());
+        loger.d("Response CODE=>" + networkResponse.code());
+        loger.d("Response MSG=>" + networkResponse.message());
 
         Map<String, List<String>> headers = networkResponse.headers();
         for(String key : headers.keySet()) {
             List<String> value = headers.get(key);
-            logcat("Response HEADER=>" + key + ":" + buildHeaderText(value));
+            loger.d("Response HEADER=>" + key + ":" + buildHeaderText(value));
         }
 
-        logcat("Response BODY=>" + parseResponseBody(networkResponse));
-    }
-
-    private static void logcat(String msg) {
-        Log.d(TAG, msg);
+        loger.d("Response BODY=>" + parseResponseBody(networkResponse));
     }
 
     private static String buildHeaderText(List<String> headers) {
