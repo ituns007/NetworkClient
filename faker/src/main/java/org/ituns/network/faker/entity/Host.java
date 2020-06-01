@@ -11,44 +11,39 @@ public final class Host {
     private final HashMap<String, Port> ports = new HashMap<>();
 
     public void append(HttpUrl url, String resource) {
+        if(url == null) {
+            return;
+        }
+
         String key = String.valueOf(url.port());
         if(TextUtils.isEmpty(key)) {
             none.append(url, resource);
-        } else {
-            Port port = ports.get(key);
-            if(port == null) {
-                port = new Port();
-                ports.put(key, port);
-            }
-            port.append(url, resource);
+            return;
         }
-    }
 
-    public boolean exists(HttpUrl url) {
-        String key = String.valueOf(url.port());
-        if(TextUtils.isEmpty(key)) {
-            return none.exists(url);
-        } else {
-            Port port = ports.get(key);
-            if(port == null) {
-                return false;
-            } else {
-                return port.exists(url);
-            }
+        Port port = ports.get(key);
+        if(port == null) {
+            port = new Port();
+            ports.put(key, port);
         }
+        port.append(url, resource);
     }
 
     public String proceed(HttpUrl url) {
+        if(url == null) {
+            return null;
+        }
+
         String key = String.valueOf(url.port());
         if(TextUtils.isEmpty(key)) {
             return none.proceed(url);
-        } else {
-            Port port = ports.get(key);
-            if(port == null) {
-                return null;
-            } else {
-                return port.proceed(url);
-            }
         }
+
+        Port port = ports.get(key);
+        if(port == null) {
+            return none.proceed(url);
+        }
+
+        return port.proceed(url);
     }
 }

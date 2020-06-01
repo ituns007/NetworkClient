@@ -57,6 +57,7 @@ public abstract class NetworkClient {
             if(networkCallback != null) {
                 networkCallback.onSuccess(response);
             }
+            releaseCallback();
         }
 
         @Override
@@ -66,6 +67,12 @@ public abstract class NetworkClient {
             if(networkCallback != null) {
                 networkCallback.onError(response);
             }
+            releaseCallback();
+        }
+
+        private void releaseCallback() {
+            mNetworkCallback = null;
+            mLogerClient = null;
         }
     }
 }

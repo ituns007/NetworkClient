@@ -9,69 +9,43 @@ import java.util.HashMap;
 import okhttp3.HttpUrl;
 
 class FakerUrl {
-    private final Scheme none = new Scheme();
     private final HashMap<String, Scheme> schemes = new HashMap<>();
 
     public void append(String url, String resource) {
-        HttpUrl httpUrl = null;
-        try {
-            httpUrl = HttpUrl.parse(url);
-        } catch (Exception e) {
+        HttpUrl httpUrl = HttpUrl.parse(url);
+        if(httpUrl == null) {
             return;
         }
 
         String key = httpUrl.scheme();
         if(TextUtils.isEmpty(key)) {
-            none.append(httpUrl, resource);
-        } else {
-            Scheme scheme = schemes.get(key);
-            if(scheme == null) {
-                scheme = new Scheme();
-                schemes.put(key, scheme);
-            }
-            scheme.append(httpUrl, resource);
-        }
-    }
-
-    public boolean exists(String url) {
-        HttpUrl httpUrl = null;
-        try {
-            httpUrl = HttpUrl.parse(url);
-        } catch (Exception e) {
-            return false;
+            return;
         }
 
-        String key = httpUrl.scheme();
-        if(TextUtils.isEmpty(key)) {
-            return none.exists(httpUrl);
-        } else {
-            Scheme scheme = schemes.get(key);
-            if(scheme == null) {
-                return false;
-            } else {
-                return scheme.exists(httpUrl);
-            }
+        Scheme scheme = schemes.get(key);
+        if(scheme == null) {
+            scheme = new Scheme();
+            schemes.put(key, scheme);
         }
+        scheme.append(httpUrl, resource);
     }
 
     public String proceed(String url) {
-        HttpUrl httpUrl = null;
-        try {
-            httpUrl = HttpUrl.parse(url);
-        } catch (Exception e) {
+        HttpUrl httpUrl = HttpUrl.parse(url);
+        if(httpUrl == null) {
             return null;
         }
 
         String key = httpUrl.scheme();
         if(TextUtils.isEmpty(key)) {
-            return none.proceed(httpUrl);
-        } else {
-            Scheme scheme = schemes.get(key);
-            if(scheme == null) {
-                return null;
-            } else {
-                return scheme.proceed(httpUrl);
-            }
+            return null;
         }
+
+        Scheme scheme = schemes.get(key);
+        if(scheme == null) {
+            return null;
+        }
+
+        return scheme.proceed(httpUrl);
     }
 }

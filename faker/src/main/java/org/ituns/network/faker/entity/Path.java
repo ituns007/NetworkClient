@@ -14,45 +14,40 @@ public final class Path {
     private final HashMap<String, Query> querys = new HashMap<>();
 
     public void append(HttpUrl url, String resource) {
+        if(url == null) {
+            return;
+        }
+
         String key = buildQuery(url);
         if(TextUtils.isEmpty(key)) {
             none.append(url, resource);
-        } else {
-            Query query = querys.get(key);
-            if(query == null) {
-                query = new Query();
-                querys.put(key, query);
-            }
-            query.append(url, resource);
+            return;
         }
-    }
 
-    public boolean exists(HttpUrl url) {
-        String key = buildQuery(url);
-        if(TextUtils.isEmpty(key)) {
-            return none.exists(url);
-        } else {
-            Query query = querys.get(key);
-            if(query == null) {
-                return false;
-            } else {
-                return query.exists(url);
-            }
+        Query query = querys.get(key);
+        if(query == null) {
+            query = new Query();
+            querys.put(key, query);
         }
+        query.append(url, resource);
     }
 
     public String proceed(HttpUrl url) {
+        if(url == null) {
+            return null;
+        }
+
         String key = buildQuery(url);
         if(TextUtils.isEmpty(key)) {
             return none.proceed(url);
-        } else {
-            Query query = querys.get(key);
-            if(query == null) {
-                return null;
-            } else {
-                return query.proceed(url);
-            }
         }
+
+        Query query = querys.get(key);
+        if(query == null) {
+            return none.proceed(url);
+        }
+
+        return query.proceed(url);
     }
 
     private String buildQuery(HttpUrl url) {
@@ -64,7 +59,7 @@ public final class Path {
     }
 
     private String translateQuery(HttpUrl url) {
-        ArrayList<Item> items = new ArrayList<>();
+        ArrayList<QueryItem> items = new ArrayList<>();
         for(int i = 0, size = url.querySize(); i < size; i++) {
             String name = url.queryParameterName(i * 2);
             if(TextUtils.isEmpty(name)) {
@@ -74,15 +69,15 @@ public final class Path {
             if(TextUtils.isEmpty(value)) {
                 value = "";
             }
-            items.add(new Item(name, value));
+            items.add(new QueryItem(name, value));
         }
 
-        Collections.sort(items, new ItemComparator());
+        Collections.sort(items, new QueryComparator());
 
         StringBuilder builder = new StringBuilder();
         for (int i = 0, size = items.size(); i < size; i++) {
             if(i > 0) builder.append('&');
-            Item item = items.get(i);
+            QueryItem item = items.get(i);
             builder.append(item.name);
             builder.append('=');
             builder.append(item.value);
@@ -90,20 +85,20 @@ public final class Path {
         return builder.toString();
     }
 
-    private class Item {
+    private static class QueryItem {
         public String name;
         public String value;
 
-        public Item(String name, String value) {
+        public QueryItem(String name, String value) {
             this.name = name;
             this.value = value;
         }
     }
 
-    private class ItemComparator implements Comparator<Item> {
+    private class QueryComparator implements Comparator<QueryItem> {
 
         @Override
-        public int compare(Item o1, Item o2) {
+        public int compare(QueryItem o1, QueryItem o2) {
             int name = o1.name.compareTo(o2.name);
             if(name == 0) {
                 return o1.value.compareTo(o2.value);

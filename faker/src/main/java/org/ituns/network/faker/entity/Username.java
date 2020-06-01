@@ -11,44 +11,39 @@ public final class Username {
     private final HashMap<String, Password> passwords = new HashMap<>();
 
     public void append(HttpUrl url, String content) {
+        if(url == null) {
+            return;
+        }
+
         String key = url.password();
         if(TextUtils.isEmpty(key)) {
             none.append(url, content);
-        } else {
-            Password password = passwords.get(key);
-            if(password == null) {
-                password = new Password();
-                passwords.put(key, password);
-            }
-            password.append(url, content);
+            return;
         }
-    }
 
-    public boolean exists(HttpUrl url) {
-        String key = url.password();
-        if(TextUtils.isEmpty(key)) {
-            return none.exists(url);
-        } else {
-            Password password = passwords.get(key);
-            if(password == null) {
-                return false;
-            } else {
-                return password.exists(url);
-            }
+        Password password = passwords.get(key);
+        if(password == null) {
+            password = new Password();
+            passwords.put(key, password);
         }
+        password.append(url, content);
     }
 
     public String proceed(HttpUrl url) {
+        if(url == null) {
+            return null;
+        }
+
         String key = url.password();
         if(TextUtils.isEmpty(key)) {
             return none.proceed(url);
-        } else {
-            Password password = passwords.get(key);
-            if(password == null) {
-                return null;
-            } else {
-                return password.proceed(url);
-            }
         }
+
+        Password password = passwords.get(key);
+        if(password == null) {
+            return none.proceed(url);
+        }
+
+        return password.proceed(url);
     }
 }

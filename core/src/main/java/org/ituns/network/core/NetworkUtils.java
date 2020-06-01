@@ -9,45 +9,50 @@ class NetworkUtils {
 
     public static void printNetworkRequest(LogerClient loger, NetworkRequest networkRequest) {
         if(networkRequest == null) {
+            loger.d("Request Error => network request is null.");
             return;
         }
 
-        loger.d("Request URL=>" + networkRequest.url());
-        loger.d("Request METHOD=>" + networkRequest.method().text());
+        loger.d("Request URL =>" + networkRequest.url());
+        loger.d("Request METHOD =>" + networkRequest.method().text());
 
         Map<String, List<String>> headers = networkRequest.headers();
         for(String key : headers.keySet()) {
             List<String> value = headers.get(key);
-            loger.d("Request HEADER=>" + key + ":" + buildHeaderText(value));
+            loger.d("Request HEADER =>" + key + ":" + buildHeaderText(value));
         }
 
         String body = parseRequestBody(networkRequest);
         if(body != null) {
-            loger.d("Request BODY=>" + body);
+            loger.d("Request BODY =>" + body);
         }
     }
 
     public static void printNetworkResponse(LogerClient loger, NetworkResponse networkResponse) {
         if(networkResponse == null) {
+            loger.d("Response Error => network response is null.");
             return;
         }
 
         NetworkRequest networkRequest = networkResponse.request();
         if(networkRequest == null) {
+            loger.d("Response Error => network request is null.");
             return;
         }
 
-        loger.d("Response URL=>" + networkRequest.url());
-        loger.d("Response CODE=>" + networkResponse.code());
-        loger.d("Response MSG=>" + networkResponse.message());
+        loger.d("Response URL =>" + networkRequest.url());
+        loger.d("Response CODE =>" + networkResponse.code());
+        loger.d("Response MSG =>" + networkResponse.message());
 
         Map<String, List<String>> headers = networkResponse.headers();
         for(String key : headers.keySet()) {
             List<String> value = headers.get(key);
-            loger.d("Response HEADER=>" + key + ":" + buildHeaderText(value));
+            loger.d("Response HEADER =>" + key + ":" + buildHeaderText(value));
         }
 
-        loger.d("Response BODY=>" + parseResponseBody(networkResponse));
+        if(networkResponse.body() != null) {
+            loger.d("Response BODY =>" + parseResponseBody(networkResponse));
+        }
     }
 
     private static String buildHeaderText(List<String> headers) {

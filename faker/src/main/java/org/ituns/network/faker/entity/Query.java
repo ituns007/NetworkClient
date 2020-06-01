@@ -11,44 +11,39 @@ public final class Query {
     private final HashMap<String, Fragment> fragments = new HashMap<>();
 
     public void append(HttpUrl url, String resource) {
+        if(url == null) {
+            return;
+        }
+
         String key = url.fragment();
         if(TextUtils.isEmpty(key)) {
             none.append(url, resource);
-        } else {
-            Fragment fragment = fragments.get(key);
-            if(fragment == null) {
-                fragment = new Fragment();
-                fragments.put(key, fragment);
-            }
-            fragment.append(url, resource);
+            return;
         }
-    }
 
-    public boolean exists(HttpUrl url) {
-        String key = url.fragment();
-        if(TextUtils.isEmpty(key)) {
-            return none.exists(url);
-        } else {
-            Fragment fragment = fragments.get(key);
-            if(fragment == null) {
-                return false;
-            } else {
-                return fragment.exists(url);
-            }
+        Fragment fragment = fragments.get(key);
+        if(fragment == null) {
+            fragment = new Fragment();
+            fragments.put(key, fragment);
         }
+        fragment.append(url, resource);
     }
 
     public String proceed(HttpUrl url) {
+        if(url == null) {
+            return null;
+        }
+
         String key = url.fragment();
         if(TextUtils.isEmpty(key)) {
             return none.proceed(url);
-        } else {
-            Fragment fragment = fragments.get(key);
-            if(fragment == null) {
-                return null;
-            } else {
-                return fragment.proceed(url);
-            }
         }
+
+        Fragment fragment = fragments.get(key);
+        if(fragment == null) {
+            return none.proceed(url);
+        }
+
+        return fragment.proceed(url);
     }
 }

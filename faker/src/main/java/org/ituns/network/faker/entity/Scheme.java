@@ -11,44 +11,39 @@ public final class Scheme {
     private final HashMap<String, Username> usernames = new HashMap<>();
 
     public void append(HttpUrl url, String resource) {
+        if(url == null) {
+            return;
+        }
+
         String key = url.username();
         if(TextUtils.isEmpty(key)) {
             none.append(url, resource);
-        } else {
-            Username username = usernames.get(key);
-            if(username == null) {
-                username = new Username();
-                usernames.put(key, username);
-            }
-            username.append(url, resource);
+            return;
         }
-    }
 
-    public boolean exists(HttpUrl url) {
-        String key = url.username();
-        if(TextUtils.isEmpty(key)) {
-            return none.exists(url);
-        } else {
-            Username username = usernames.get(key);
-            if(username == null) {
-                return false;
-            } else {
-                return username.exists(url);
-            }
+        Username username = usernames.get(key);
+        if(username == null) {
+            username = new Username();
+            usernames.put(key, username);
         }
+        username.append(url, resource);
     }
 
     public String proceed(HttpUrl url) {
+        if(url == null) {
+            return null;
+        }
+
         String key = url.username();
         if(TextUtils.isEmpty(key)) {
             return none.proceed(url);
-        } else {
-            Username username = usernames.get(key);
-            if(username == null) {
-                return null;
-            } else {
-                return username.proceed(url);
-            }
         }
+
+        Username username = usernames.get(key);
+        if(username == null) {
+            return none.proceed(url);
+        }
+
+        return username.proceed(url);
     }
 }
