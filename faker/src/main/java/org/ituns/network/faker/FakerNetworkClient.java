@@ -8,11 +8,9 @@ import org.ituns.network.core.NetworkResponse;
 import org.ituns.system.concurrent.BackTask;
 
 public final class FakerNetworkClient extends NetworkClient {
-    private final BackTask mBackTask;
     private final FakerAdapter mFakerAdapter;
 
     public FakerNetworkClient(FakerAdapter fakeAdapter) {
-        mBackTask = new BackTask();
         mFakerAdapter = fakeAdapter;
     }
 
@@ -55,13 +53,11 @@ public final class FakerNetworkClient extends NetworkClient {
             return;
         }
 
-        mBackTask.post(new RequestAsyncTask(fakerAdapter, networkRequest, callback));
+        BackTask.post(new RequestAsyncTask(fakerAdapter, networkRequest, callback));
     }
 
     @Override
-    protected void onRelease() {
-        mBackTask.release();
-    }
+    protected void onRelease() {}
 
     private static class RequestAsyncTask implements Runnable {
         private FakerAdapter mFakerAdapter;

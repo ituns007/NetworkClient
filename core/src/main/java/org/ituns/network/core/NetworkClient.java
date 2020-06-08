@@ -6,7 +6,7 @@ import org.ituns.toolset.loger.Priority;
 public abstract class NetworkClient {
     private static final String TAG = "NetworkClient";
 
-    protected final LogerClient mLogerClient;
+    private final LogerClient mLogerClient;
 
     public NetworkClient() {
         mLogerClient = new LogerClient(TAG);
