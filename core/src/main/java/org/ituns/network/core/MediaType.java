@@ -1,4 +1,4 @@
-package org.ituns.network.core.temp;
+package org.ituns.network.core;
 
 public class MediaType {
     private String type;
