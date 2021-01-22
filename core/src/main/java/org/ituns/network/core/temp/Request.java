@@ -4,27 +4,25 @@ import android.text.TextUtils;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Request {
     private String url;
-    private byte[] body;
     private Method method;
-    private MediaType mediaType;
     private Map<String, String> headers;
+    private Body body;
 
     private Request() {}
 
     public String url() { return url; }
 
-    public byte[] body() { return body; }
-
     public Method method() { return method; }
 
-    public MediaType mediaType() { return mediaType; }
-
     public Map<String, String> headers() { return headers; }
+
+    public Body body() { return body; }
 
     public static UrlBuilder get() {
         return new UrlBuilder(Method.GET);
@@ -125,6 +123,10 @@ public class Request {
             return new RawBodyBuilder(method);
         }
 
+        public TextBodyBuilder text() {
+            return new TextBodyBuilder(method);
+        }
+
         public FormBodyBuilder form() {
             return new FormBodyBuilder(method);
         }
@@ -132,18 +134,23 @@ public class Request {
         public JsonBodyBuilder json() {
             return new JsonBodyBuilder(method);
         }
+
+        public FileBodyBuilder file() {
+            return new FileBodyBuilder(method);
+        }
     }
 
     public static class RawBodyBuilder extends Builder {
+        MediaType type;
         byte[] body;
-        MediaType mediaType;
 
         private RawBodyBuilder(Method method) {
             super(method);
         }
 
-        public RawBodyBuilder body(String body) {
-            return this.body(body.getBytes());
+        public RawBodyBuilder type(MediaType type) {
+            this.type = type;
+            return this;
         }
 
         public RawBodyBuilder body(byte[] body) {
@@ -151,8 +158,32 @@ public class Request {
             return this;
         }
 
-        public RawBodyBuilder mediaType(MediaType mediaType) {
-            this.mediaType = mediaType;
+        @Override
+        public Request build() {
+            Request request = new Request();
+            request.url = url;
+            request.method = method;
+            request.headers = headers;
+            request.body = Body.create(type, body);
+            return request;
+        }
+    }
+
+    public static class TextBodyBuilder extends Builder {
+        MediaType type;
+        String body;
+
+        private TextBodyBuilder(Method method) {
+            super(method);
+        }
+
+        public TextBodyBuilder type(MediaType type) {
+            this.type = type;
+            return this;
+        }
+
+        public TextBodyBuilder body(String body) {
+            this.body = body;
             return this;
         }
 
@@ -160,38 +191,37 @@ public class Request {
         public Request build() {
             Request request = new Request();
             request.url = url;
-            request.body = body;
             request.method = method;
-            request.mediaType = mediaType;
             request.headers = headers;
+            request.body = Body.create(type, body);
             return request;
         }
     }
 
     public static class FormBodyBuilder extends Builder {
-        MediaType mediaType;
-        Map<String, String> parameters;
+        MediaType type;
+        Map<String, String> params;
 
         private FormBodyBuilder(Method method) {
             super(method);
-            this.parameters = new HashMap<>();
+            this.params = new HashMap<>();
         }
 
-        public FormBodyBuilder mediaType(MediaType mediaType) {
-            this.mediaType = mediaType;
+        public FormBodyBuilder type(MediaType type) {
+            this.type = type;
             return this;
         }
 
-        public FormBodyBuilder parameter(String key, String value) {
+        public FormBodyBuilder add(String key, String value) {
             if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
-                this.parameters.put(key, value);
+                this.params.put(key, value);
             }
             return this;
         }
 
-        public FormBodyBuilder parameters(Map<String, String> parameters) {
+        public FormBodyBuilder addAll(Map<String, String> parameters) {
             if(parameters != null) {
-                this.parameters.putAll(parameters);
+                this.params.putAll(parameters);
             }
             return this;
         }
@@ -200,38 +230,37 @@ public class Request {
         public Request build() {
             Request request = new Request();
             request.url = url;
-            request.body = parametersToForm(parameters).getBytes();
             request.method = method;
-            request.mediaType = mediaType;
             request.headers = headers;
+            request.body = Body.create(type, parametersToForm(params));
             return request;
         }
     }
 
     public static class JsonBodyBuilder extends Builder {
-        MediaType mediaType;
-        Map<String, String> parameters;
+        MediaType type;
+        Map<String, String> params;
 
         private JsonBodyBuilder(Method method) {
             super(method);
-            this.parameters = new HashMap<>();
+            this.params = new HashMap<>();
         }
 
-        public JsonBodyBuilder mediaType(MediaType mediaType) {
-            this.mediaType = mediaType;
+        public JsonBodyBuilder type(MediaType type) {
+            this.type = type;
             return this;
         }
 
-        public JsonBodyBuilder parameter(String key, String value) {
+        public JsonBodyBuilder add(String key, String value) {
             if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
-                this.parameters.put(key, value);
+                this.params.put(key, value);
             }
             return this;
         }
 
-        public JsonBodyBuilder parameters(Map<String, String> parameters) {
+        public JsonBodyBuilder addAll(Map<String, String> parameters) {
             if(parameters != null) {
-                this.parameters.putAll(parameters);
+                this.params.putAll(parameters);
             }
             return this;
         }
@@ -240,10 +269,38 @@ public class Request {
         public Request build() {
             Request request = new Request();
             request.url = url;
-            request.body = parametersToJson(parameters).getBytes();
             request.method = method;
-            request.mediaType = mediaType;
             request.headers = headers;
+            request.body = Body.create(type, parametersToJson(params));
+            return request;
+        }
+    }
+
+    public static class FileBodyBuilder extends Builder {
+        MediaType type;
+        File body;
+
+        private FileBodyBuilder(Method method) {
+            super(method);
+        }
+
+        public FileBodyBuilder type(MediaType type) {
+            this.type = type;
+            return this;
+        }
+
+        public FileBodyBuilder body(File body) {
+            this.body = body;
+            return this;
+        }
+
+        @Override
+        public Request build() {
+            Request request = new Request();
+            request.url = url;
+            request.method = method;
+            request.headers = headers;
+            request.body = Body.create(type, body);
             return request;
         }
     }
