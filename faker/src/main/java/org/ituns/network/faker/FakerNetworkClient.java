@@ -1,53 +1,58 @@
 package org.ituns.network.faker;
 
-import org.ituns.network.core.NetworkCallback;
-import org.ituns.network.core.NetworkClient;
-import org.ituns.network.core.NetworkCode;
-import org.ituns.network.core.NetworkRequest;
-import org.ituns.network.core.NetworkResponse;
+import org.ituns.network.core.Callback;
+import org.ituns.network.core.Client;
+import org.ituns.network.core.Code;
+import org.ituns.network.core.Request;
+import org.ituns.network.core.Response;
 import org.ituns.system.concurrent.BackTask;
 
-public final class FakerNetworkClient extends NetworkClient {
+public final class FakerNetworkClient extends Client {
     private final FakerAdapter mFakerAdapter;
 
-    public FakerNetworkClient(FakerAdapter fakeAdapter) {
-        mFakerAdapter = fakeAdapter;
+    public FakerNetworkClient(FakerConfig config) {
+        super(config.logger());
+        mFakerAdapter = config.adapter();
     }
 
     @Override
-    protected NetworkResponse onRequestSync(NetworkRequest networkRequest) {
-        if(networkRequest == null) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_REQUEST)
-                    .message("network request is null.")
+    protected Response onRequestSync(Request request) {
+        if(request == null) {
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
+                    .message("request is null.")
                     .build();
         }
 
         FakerAdapter fakerAdapter = mFakerAdapter;
         if(fakerAdapter == null) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_REQUEST)
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
                     .message("faker adapter is null.")
                     .build();
         }
 
-        return fakerAdapter.readNetworkResponse(networkRequest);
+        return fakerAdapter.readNetworkResponse(request);
     }
 
     @Override
-    protected void onRequestAsync(NetworkRequest networkRequest, NetworkCallback callback) {
-        if(networkRequest == null) {
-            callback.onError(new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_REQUEST)
-                    .message("network request is null.")
+    protected void onRequestAsync(Request request, Callback callback) {
+        if(request == null) {
+            callback.onResponse(new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
+                    .message("request is null.")
                     .build());
             return;
         }
 
         FakerAdapter fakerAdapter = mFakerAdapter;
         if(fakerAdapter == null) {
-            callback.onError(new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_REQUEST)
+            callback.onResponse(new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
                     .message("faker adapter is null.")
                     .build());
             return;
@@ -57,47 +62,48 @@ public final class FakerNetworkClient extends NetworkClient {
     }
 
     @Override
-    protected void onRelease() {}
+    public void release() {}
 
     private static class RequestAsyncTask implements Runnable {
-        private FakerAdapter mFakerAdapter;
-        private NetworkRequest mNetworkRequest;
-        private NetworkCallback mNetworkCallback;
+        private FakerAdapter mAdapter;
+        private Request mRequest;
+        private Callback mCallback;
 
-        public RequestAsyncTask(FakerAdapter fakerAdapter, NetworkRequest networkRequest, NetworkCallback networkCallback) {
-            mFakerAdapter = fakerAdapter;
-            mNetworkRequest = networkRequest;
-            mNetworkCallback = networkCallback;
+        public RequestAsyncTask(FakerAdapter adapter, Request request, Callback callback) {
+            mAdapter = adapter;
+            mRequest = request;
+            mCallback = callback;
         }
 
         @Override
         public void run() {
-            NetworkRequest networkRequest = mNetworkRequest;
-            NetworkCallback networkCallback = mNetworkCallback;
-            if(networkCallback == null) {
+            Request request = mRequest;
+            Callback callback = mCallback;
+            if(callback == null) {
                 releaseAsyncTask();
                 return;
             }
 
-            FakerAdapter fakerAdapter = mFakerAdapter;
-            if(fakerAdapter == null) {
-                networkCallback.onError(new NetworkResponse.Builder(networkRequest)
-                        .code(NetworkCode.ERROR_REQUEST)
+            FakerAdapter adapter = mAdapter;
+            if(adapter == null) {
+                callback.onResponse(new Response.Builder()
+                        .request(request)
+                        .code(Code.FAIL_REQ)
                         .message("faker adapter is null.")
                         .build());
                 releaseAsyncTask();
                 return;
             }
 
-            NetworkResponse networkResponse = fakerAdapter.readNetworkResponse(networkRequest);
-            networkCallback.onSuccess(networkResponse);
+            Response response = adapter.readNetworkResponse(request);
+            callback.onResponse(response);
             releaseAsyncTask();
         }
 
         private void releaseAsyncTask() {
-            mNetworkCallback = null;
-            mNetworkRequest = null;
-            mFakerAdapter = null;
+            mCallback = null;
+            mRequest = null;
+            mAdapter = null;
         }
     }
 }

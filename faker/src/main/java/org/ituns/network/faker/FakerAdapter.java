@@ -3,9 +3,10 @@ package org.ituns.network.faker;
 import android.content.Context;
 import android.text.TextUtils;
 
-import org.ituns.network.core.NetworkCode;
-import org.ituns.network.core.NetworkRequest;
-import org.ituns.network.core.NetworkResponse;
+import org.ituns.network.core.Code;
+import org.ituns.network.core.MediaType;
+import org.ituns.network.core.Request;
+import org.ituns.network.core.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,34 +27,38 @@ public final class FakerAdapter {
         this.mFakerUrl = builder.fakerUrl;
     }
 
-    public NetworkResponse readNetworkResponse(NetworkRequest networkRequest) {
-        if(networkRequest == null) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_REQUEST)
-                    .message("network request is null.")
+    public Response readNetworkResponse(Request request) {
+        if(request == null) {
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
+                    .message("request is null.")
                     .build();
         }
 
         Context context = mContext;
         if(context == null) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_RESPONSE)
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
                     .message("context is null.")
                     .build();
         }
 
         FakerUrl fakerUrl = mFakerUrl;
         if(fakerUrl == null) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_RESPONSE)
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
                     .message("faker url is null.")
                     .build();
         }
 
-        String resource = fakerUrl.proceed(networkRequest.url());
+        String resource = fakerUrl.proceed(request.url());
         if(TextUtils.isEmpty(resource)) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_RESPONSE)
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
                     .message("response resource is empty.")
                     .build();
         }
@@ -63,28 +68,32 @@ public final class FakerAdapter {
 
             JSONObject jsonData = new JSONObject(resourceData);
 
-            return parseResponseFromJson(networkRequest, jsonData);
+            return parseResponseFromJson(request, jsonData);
         } catch (Exception e) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_RESPONSE)
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_RESP)
                     .message("exception:" + e.getMessage())
                     .build();
         }
     }
 
-    private NetworkResponse parseResponseFromJson(NetworkRequest networkRequest, JSONObject json) {
+    private Response parseResponseFromJson(Request request, JSONObject json) {
         if(json == null) {
-            return new NetworkResponse.Builder(networkRequest)
-                    .code(NetworkCode.ERROR_RESPONSE)
+            return new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_RESP)
                     .message("json data is null.")
                     .build();
         }
 
-        NetworkResponse.Builder builder = new NetworkResponse.Builder(networkRequest);
-        builder.code(json.optInt("code", NetworkCode.ERROR_RESPONSE));
+        Response.Builder builder = new Response.Builder();
+        builder.request(request);
+        builder.code(json.optInt("code", Code.FAIL_RESP));
         builder.message(json.optString("message", "Non Message!"));
         builder.headers(parseHeaderFromJson(json.optJSONObject("header")));
-        builder.body(json.optString("body", "").getBytes());
+        builder.body(Response.Body.create(MediaType.parse("application/json"),
+                json.optString("body", "")));
         return builder.build();
     }
 
