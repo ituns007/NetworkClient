@@ -14,6 +14,6 @@ public class MultiBody extends Body {
 
     @Override
     public void writeTo(Sink sink) {
-
+        sink.write(this);
     }
 }
