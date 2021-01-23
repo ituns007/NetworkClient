@@ -1,4 +1,4 @@
-package org.ituns.network.faker.entity;
+package org.ituns.network.faker.url;
 
 import android.text.TextUtils;
 
@@ -6,27 +6,27 @@ import java.util.HashMap;
 
 import okhttp3.HttpUrl;
 
-public final class Password {
-    private final Host none = new Host();
-    private final HashMap<String, Host> hosts = new HashMap<>();
+public final class Host {
+    private final Port none = new Port();
+    private final HashMap<String, Port> ports = new HashMap<>();
 
     public void append(HttpUrl url, String resource) {
         if(url == null) {
             return;
         }
 
-        String key = url.host();
+        String key = String.valueOf(url.port());
         if(TextUtils.isEmpty(key)) {
             none.append(url, resource);
             return;
         }
 
-        Host host = hosts.get(key);
-        if(host == null) {
-            host = new Host();
-            hosts.put(key, host);
+        Port port = ports.get(key);
+        if(port == null) {
+            port = new Port();
+            ports.put(key, port);
         }
-        host.append(url, resource);
+        port.append(url, resource);
     }
 
     public String proceed(HttpUrl url) {
@@ -34,16 +34,16 @@ public final class Password {
             return null;
         }
 
-        String key = url.host();
+        String key = String.valueOf(url.port());
         if(TextUtils.isEmpty(key)) {
             return none.proceed(url);
         }
 
-        Host host = hosts.get(key);
-        if(host == null) {
+        Port port = ports.get(key);
+        if(port == null) {
             return none.proceed(url);
         }
 
-        return host.proceed(url);
+        return port.proceed(url);
     }
 }

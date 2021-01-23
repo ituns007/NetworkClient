@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,15 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 public final class FakerAdapter {
-    private Context mContext;
     private FakerUrl mFakerUrl;
+    private final WeakReference<Context> mContext;
 
     private FakerAdapter(Builder builder) {
-        this.mContext = builder.context;
         this.mFakerUrl = builder.fakerUrl;
+        this.mContext = new WeakReference<>(builder.context);
     }
 
-    public Response readNetworkResponse(Request request) {
+    Response readNetworkResponse(Request request) {
         if(request == null) {
             return new Response.Builder()
                     .request(request)
@@ -36,7 +37,7 @@ public final class FakerAdapter {
                     .build();
         }
 
-        Context context = mContext;
+        Context context = mContext.get();
         if(context == null) {
             return new Response.Builder()
                     .request(request)
@@ -59,7 +60,7 @@ public final class FakerAdapter {
             return new Response.Builder()
                     .request(request)
                     .code(Code.FAIL_REQ)
-                    .message("response resource is empty.")
+                    .message("resource is empty.")
                     .build();
         }
 
@@ -137,6 +138,15 @@ public final class FakerAdapter {
         baos.close();
         is.close();
         return new String(bytes, "UTF-8");
+    }
+
+    void release() {
+        mContext.clear();
+        FakerUrl fakerUrl = mFakerUrl;
+        if(fakerUrl != null) {
+            fakerUrl.release();
+            mFakerUrl = null;
+        }
     }
 
     public static class Builder {

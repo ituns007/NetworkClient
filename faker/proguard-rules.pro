@@ -24,7 +24,7 @@
 
 -keep class org.ituns.network.faker.FakerAdapter { public <methods>; }
 -keep class org.ituns.network.faker.FakerAdapter$Builder { public <methods>; }
--keep class org.ituns.network.faker.FakerNetworkClient {
+-keep class org.ituns.network.faker.FakerClient {
     public <methods>;
     protected <methods>;
 }

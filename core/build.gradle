@@ -13,7 +13,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -30,6 +30,4 @@ dependencies {
     testImplementation "junit:junit:${JUNIT_VERSION}"
     androidTestImplementation "androidx.test:runner:${RUNNER_VERSION}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${ESPRESSO_VERSION}"
-
-    api "org.ituns.toolset:loger:${TOOLSET_LOGER_VERSION}"
 }

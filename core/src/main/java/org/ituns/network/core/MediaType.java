@@ -1,14 +1,14 @@
 package org.ituns.network.core;
 
 public class MediaType {
-    private String type;
+    private String name;
 
-    private MediaType(String type) {
-        this.type = type;
+    private MediaType(String name) {
+        this.name = name;
     }
 
-    public String type() {
-        return type;
+    public String name() {
+        return name;
     }
 
     public static MediaType parse(String type) {

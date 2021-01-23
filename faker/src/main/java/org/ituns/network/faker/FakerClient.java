@@ -1,18 +1,28 @@
 package org.ituns.network.faker;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+
 import org.ituns.network.core.Callback;
 import org.ituns.network.core.Client;
 import org.ituns.network.core.Code;
 import org.ituns.network.core.Request;
 import org.ituns.network.core.Response;
-import org.ituns.system.concurrent.BackTask;
 
-public final class FakerNetworkClient extends Client {
-    private final FakerAdapter mFakerAdapter;
+public final class FakerClient extends Client {
+    private Handler mHandler;
+    private FakerAdapter mAdapter;
 
-    public FakerNetworkClient(FakerConfig config) {
+    public FakerClient(FakerConfig config) {
         super(config.logger());
-        mFakerAdapter = config.adapter();
+        mHandler = initHandler();
+        mAdapter = config.adapter();
+    }
+
+    private Handler initHandler() {
+        HandlerThread thread = new HandlerThread("FakerClient");
+        thread.start();
+        return new Handler(thread.getLooper());
     }
 
     @Override
@@ -25,8 +35,8 @@ public final class FakerNetworkClient extends Client {
                     .build();
         }
 
-        FakerAdapter fakerAdapter = mFakerAdapter;
-        if(fakerAdapter == null) {
+        FakerAdapter adapter = mAdapter;
+        if(adapter == null) {
             return new Response.Builder()
                     .request(request)
                     .code(Code.FAIL_REQ)
@@ -34,7 +44,7 @@ public final class FakerNetworkClient extends Client {
                     .build();
         }
 
-        return fakerAdapter.readNetworkResponse(request);
+        return adapter.readNetworkResponse(request);
     }
 
     @Override
@@ -48,8 +58,8 @@ public final class FakerNetworkClient extends Client {
             return;
         }
 
-        FakerAdapter fakerAdapter = mFakerAdapter;
-        if(fakerAdapter == null) {
+        FakerAdapter adapter = mAdapter;
+        if(adapter == null) {
             callback.onResponse(new Response.Builder()
                     .request(request)
                     .code(Code.FAIL_REQ)
@@ -58,11 +68,32 @@ public final class FakerNetworkClient extends Client {
             return;
         }
 
-        BackTask.post(new RequestAsyncTask(fakerAdapter, networkRequest, callback));
+        Handler handler = mHandler;
+        if(handler == null) {
+            callback.onResponse(new Response.Builder()
+                    .request(request)
+                    .code(Code.FAIL_REQ)
+                    .message("handler is null.")
+                    .build());
+            return;
+        }
+
+        handler.post(new RequestAsyncTask(adapter, request, callback));
     }
 
     @Override
-    public void release() {}
+    public void release() {
+        FakerAdapter adapter = mAdapter;
+        if(adapter != null) {
+            adapter.release();
+            mAdapter = null;
+        }
+        Handler handler = mHandler;
+        if(handler != null) {
+            handler.getLooper().quit();
+            mHandler = null;
+        }
+    }
 
     private static class RequestAsyncTask implements Runnable {
         private FakerAdapter mAdapter;

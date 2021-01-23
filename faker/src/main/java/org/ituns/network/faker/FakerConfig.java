@@ -2,7 +2,7 @@ package org.ituns.network.faker;
 
 import org.ituns.network.core.Logger;
 
-public class FakerConfig {
+public final class FakerConfig {
     private Logger logger;
     private FakerAdapter adapter;
 

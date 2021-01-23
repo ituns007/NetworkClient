@@ -26,15 +26,14 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation "junit:junit:${JUNIT_VERSION}"
     androidTestImplementation "androidx.test:runner:${RUNNER_VERSION}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${ESPRESSO_VERSION}"
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(path: ":core")
 //    api "org.ituns.network:core:${NETWORK_CORE_VERSION}"
 
     api "com.squareup.okhttp3:okhttp:${OKHTTP_COMPAT_VERSION}"
-    api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_COMPAT_VERSION}"
+//    api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_COMPAT_VERSION}"
 }

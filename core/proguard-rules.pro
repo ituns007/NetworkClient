@@ -22,19 +22,5 @@
 -dontoptimize
 -keeppackagenames org.ituns.network.core
 
--keep class org.ituns.network.core.body.NetworkCallback { *; }
--keep class org.ituns.network.core.body.NetworkClient {
-    protected <fields>;
-    protected <methods>;
-    public <methods>;
-}
--keep class org.ituns.network.core.body.NetworkCode { *; }
--keep class org.ituns.network.core.body.NetworkMethod { *; }
--keep class org.ituns.network.core.body.NetworkRequest { public <methods>; }
--keep class org.ituns.network.core.body.NetworkRequest$Builder { public <methods>; }
--keep class org.ituns.network.core.body.NetworkResponse { public <methods>; }
--keep class org.ituns.network.core.body.NetworkResponse$Builder { public <methods>; }
-
-
 -keep class org.ituns.network.core.R{ *; }
 -keep class org.ituns.network.core.R$* { public static <fields>; }

@@ -1,4 +1,4 @@
-package org.ituns.network.faker.entity;
+package org.ituns.network.faker.url;
 
 import android.text.TextUtils;
 

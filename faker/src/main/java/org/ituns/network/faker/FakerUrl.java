@@ -2,7 +2,7 @@ package org.ituns.network.faker;
 
 import android.text.TextUtils;
 
-import org.ituns.network.faker.entity.Scheme;
+import org.ituns.network.faker.url.Scheme;
 
 import java.util.HashMap;
 
@@ -47,5 +47,9 @@ class FakerUrl {
         }
 
         return scheme.proceed(httpUrl);
+    }
+
+    public void release() {
+        schemes.clear();
     }
 }

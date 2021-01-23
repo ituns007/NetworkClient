@@ -283,7 +283,7 @@ public final class Request {
             MediaType mediaType = body.mediaType();
             if(mediaType != null) {
                 sink.write("Content-Type: ");
-                sink.write(mediaType.type());
+                sink.write(mediaType.name());
                 sink.write("CRLF");
             }
 
