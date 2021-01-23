@@ -1,5 +1,6 @@
 package org.ituns.network.okhttp.compat;
 
+import org.ituns.network.core.MediaType;
 import org.ituns.network.core.Request;
 
 import java.io.File;
@@ -27,38 +28,42 @@ public class OkHttpBuffer implements Request.Sink {
     @Override
     public void write(byte[] bytes) throws IOException {
         if(body != null) {
-            String type = body.mediaType().name();
-            requestBody = RequestBody.create(okhttp3.MediaType.parse(type), bytes);
+            requestBody = RequestBody.create(transMediaType(body.mediaType()), bytes);
         }
     }
 
     @Override
     public void write(File file) throws IOException {
         if(body != null) {
-            String type = body.mediaType().name();
-            requestBody = RequestBody.create(okhttp3.MediaType.parse(type), file);
+            requestBody = RequestBody.create(transMediaType(body.mediaType()), file);
         }
     }
 
     @Override
     public void write(String content) throws IOException {
         if(body != null) {
-            String type = body.mediaType().name();
-            requestBody = RequestBody.create(okhttp3.MediaType.parse(type), content);
+            requestBody = RequestBody.create(transMediaType(body.mediaType()), content);
         }
     }
 
     @Override
     public void write(String boundary, List<Request.MultiPart> parts) throws IOException {
         if(body != null) {
-            String type = body.mediaType().name();
             MultipartBody.Builder builder = new MultipartBody.Builder(boundary);
-            builder.setType(okhttp3.MediaType.parse(type));
+            builder.setType(transMediaType(body.mediaType()));
             for(Request.MultiPart part : parts) {
                 OkHttpBuffer buffer = new OkHttpBuffer(part.body());
                 builder.addFormDataPart(part.name(), part.filename(), buffer.okhttpBody());
             }
             requestBody = builder.build();
+        }
+    }
+
+    private okhttp3.MediaType transMediaType(MediaType mediaType) {
+        if(mediaType == null) {
+            return okhttp3.MediaType.parse("text/plain");
+        } else {
+            return okhttp3.MediaType.parse(mediaType.name());
         }
     }
 }

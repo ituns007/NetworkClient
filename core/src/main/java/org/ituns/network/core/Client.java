@@ -7,8 +7,8 @@ import java.util.Map;
 public abstract class Client {
     private final Logcat mLogcat;
 
-    public Client(Logger logger) {
-        mLogcat = new Logcat(logger);
+    public Client(Config config) {
+        mLogcat = new Logcat(config.logger());
     }
 
     public final Response requestSync(Request request) {

@@ -14,7 +14,7 @@ public final class FakerClient extends Client {
     private FakerAdapter mAdapter;
 
     public FakerClient(FakerConfig config) {
-        super(config.logger());
+        super(config);
         mHandler = initHandler();
         mAdapter = config.adapter();
     }

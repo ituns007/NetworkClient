@@ -3,22 +3,22 @@ package org.ituns.network.okhttp.stable;
 
 import android.content.Context;
 
+import org.ituns.network.core.Config;
 import org.ituns.network.core.Logger;
 
-public class OkHttpConfig {
+public class OkHttpConfig extends Config {
     private static final long DEFAULT_TIME_OUT = 30;
     private static final long DEFAULT_CACHE_SIZE = 10 * 1024 * 1024;
     private static final String DEFAULT_CACHE_DIRECTORY = "okhttp";
 
     private Context context;
-    private Logger logger;
     private long timeOut;
     private long cacheSize;
     private String cacheDirectory;
 
     private OkHttpConfig(Builder builder) {
+        super(builder.logger);
         this.context = builder.context;
-        this.logger = builder.logger;
         this.timeOut = builder.timeOut;
         this.cacheSize = builder.cacheSize;
         this.cacheDirectory = builder.cacheDirectory;
@@ -26,10 +26,6 @@ public class OkHttpConfig {
 
     public Context context() {
         return context;
-    }
-
-    public Logger logger() {
-        return logger;
     }
 
     public long timeOut() {

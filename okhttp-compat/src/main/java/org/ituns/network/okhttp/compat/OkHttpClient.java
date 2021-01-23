@@ -25,7 +25,7 @@ public class OkHttpClient extends Client {
     private okhttp3.OkHttpClient mOkHttpClient;
 
     public OkHttpClient(OkHttpConfig config) {
-        super(config.logger());
+        super(config);
         mOkHttpClient = new okhttp3.OkHttpClient.Builder()
                 .readTimeout(config.timeOut(), TimeUnit.SECONDS)
                 .writeTimeout(config.timeOut(), TimeUnit.SECONDS)
@@ -98,6 +98,7 @@ public class OkHttpClient extends Client {
                     .code(Code.FAIL_REQ)
                     .message("request is null.")
                     .build());
+            return;
         }
 
         okhttp3.Request okhttpRequest = OkHttpRequest.create(request);
@@ -107,6 +108,7 @@ public class OkHttpClient extends Client {
                     .code(Code.FAIL_REQ)
                     .message("okhttp request is null.")
                     .build());
+            return;
         }
 
         okhttp3.OkHttpClient okhttpClient = mOkHttpClient;
@@ -116,6 +118,7 @@ public class OkHttpClient extends Client {
                     .code(Code.FAIL_REQ)
                     .message("okhttp client is null.")
                     .build());
+            return;
         }
 
         okhttpClient.newCall(okhttpRequest).enqueue(new OkhttpCallback(request, callback));
@@ -163,6 +166,7 @@ public class OkHttpClient extends Client {
                         .message("okhttp response is null.")
                         .build());
                 release();
+                return;
             }
 
             Response.Body body = null;

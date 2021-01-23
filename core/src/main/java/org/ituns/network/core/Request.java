@@ -62,12 +62,23 @@ public final class Request {
             this.headers = new HashMap<>();
         }
 
-        public Builder url(String url) {
+        public abstract Request build();
+    }
+
+    public static final class UrlBuilder extends Builder {
+        Map<String, String> params;
+
+        private UrlBuilder(Method method) {
+            super(method);
+            this.params = new HashMap<>();
+        }
+
+        public UrlBuilder url(String url) {
             this.url = url;
             return this;
         }
 
-        public Builder addHeader(String name, String value) {
+        public UrlBuilder addHeader(String name, String value) {
             if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
                 List<String> values = headers.get(name);
                 if(values == null) {
@@ -79,7 +90,7 @@ public final class Request {
             return this;
         }
 
-        public Builder setHeader(String name, String value) {
+        public UrlBuilder setHeader(String name, String value) {
             if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
                 headers.remove(name);
                 ArrayList<String> values = new ArrayList<>();
@@ -89,34 +100,23 @@ public final class Request {
             return this;
         }
 
-        public Builder headers(Map<String, List<String>> headers) {
+        public UrlBuilder headers(Map<String, List<String>> headers) {
             if(headers != null) {
                 this.headers.putAll(headers);
             }
             return this;
         }
 
-        public abstract Request build();
-    }
-
-    public static final class UrlBuilder extends Builder {
-        Map<String, String> parameters;
-
-        private UrlBuilder(Method method) {
-            super(method);
-            this.parameters = new HashMap<>();
-        }
-
-        public UrlBuilder parameter(String key, String value) {
+        public UrlBuilder addParam(String key, String value) {
             if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
-                this.parameters.put(key, value);
+                this.params.put(key, value);
             }
             return this;
         }
 
-        public UrlBuilder parameters(Map<String, String> parameters) {
+        public UrlBuilder addParams(Map<String, String> parameters) {
             if(parameters != null) {
-                this.parameters.putAll(parameters);
+                this.params.putAll(parameters);
             }
             return this;
         }
@@ -124,7 +124,7 @@ public final class Request {
         @Override
         public Request build() {
             Request request = new Request();
-            request.url = buildValidUrl(url, parametersToForm(parameters));
+            request.url = buildValidUrl(url, parametersToForm(params));
             request.method = method;
             request.headers = headers;
             return request;
@@ -365,6 +365,41 @@ public final class Request {
 
         private RawBodyBuilder(Method method) {
             super(method);
+            this.type = MediaType.parse("application/octet-stream");
+        }
+
+        public RawBodyBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public RawBodyBuilder addHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                List<String> values = headers.get(name);
+                if(values == null) {
+                    values = new ArrayList<>();
+                    headers.put(name, values);
+                }
+                values.add(value);
+            }
+            return this;
+        }
+
+        public RawBodyBuilder setHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                headers.remove(name);
+                ArrayList<String> values = new ArrayList<>();
+                values.add(value);
+                headers.put(name, values);
+            }
+            return this;
+        }
+
+        public RawBodyBuilder headers(Map<String, List<String>> headers) {
+            if(headers != null) {
+                this.headers.putAll(headers);
+            }
+            return this;
         }
 
         public RawBodyBuilder type(MediaType type) {
@@ -394,6 +429,41 @@ public final class Request {
 
         private TextBodyBuilder(Method method) {
             super(method);
+            this.type = MediaType.parse("text/plain");
+        }
+
+        public TextBodyBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public TextBodyBuilder addHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                List<String> values = headers.get(name);
+                if(values == null) {
+                    values = new ArrayList<>();
+                    headers.put(name, values);
+                }
+                values.add(value);
+            }
+            return this;
+        }
+
+        public TextBodyBuilder setHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                headers.remove(name);
+                ArrayList<String> values = new ArrayList<>();
+                values.add(value);
+                headers.put(name, values);
+            }
+            return this;
+        }
+
+        public TextBodyBuilder headers(Map<String, List<String>> headers) {
+            if(headers != null) {
+                this.headers.putAll(headers);
+            }
+            return this;
         }
 
         public TextBodyBuilder type(MediaType type) {
@@ -423,7 +493,42 @@ public final class Request {
 
         private FormBodyBuilder(Method method) {
             super(method);
+            this.type = MediaType.parse("application/x-www-form-urlencoded");
             this.params = new HashMap<>();
+        }
+
+        public FormBodyBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public FormBodyBuilder addHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                List<String> values = headers.get(name);
+                if(values == null) {
+                    values = new ArrayList<>();
+                    headers.put(name, values);
+                }
+                values.add(value);
+            }
+            return this;
+        }
+
+        public FormBodyBuilder setHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                headers.remove(name);
+                ArrayList<String> values = new ArrayList<>();
+                values.add(value);
+                headers.put(name, values);
+            }
+            return this;
+        }
+
+        public FormBodyBuilder headers(Map<String, List<String>> headers) {
+            if(headers != null) {
+                this.headers.putAll(headers);
+            }
+            return this;
         }
 
         public FormBodyBuilder type(MediaType type) {
@@ -431,14 +536,14 @@ public final class Request {
             return this;
         }
 
-        public FormBodyBuilder add(String key, String value) {
+        public FormBodyBuilder addParam(String key, String value) {
             if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
                 this.params.put(key, value);
             }
             return this;
         }
 
-        public FormBodyBuilder addAll(Map<String, String> parameters) {
+        public FormBodyBuilder addParams(Map<String, String> parameters) {
             if(parameters != null) {
                 this.params.putAll(parameters);
             }
@@ -462,7 +567,42 @@ public final class Request {
 
         private JsonBodyBuilder(Method method) {
             super(method);
+            this.type = MediaType.parse("application/json");
             this.params = new HashMap<>();
+        }
+
+        public JsonBodyBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public JsonBodyBuilder addHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                List<String> values = headers.get(name);
+                if(values == null) {
+                    values = new ArrayList<>();
+                    headers.put(name, values);
+                }
+                values.add(value);
+            }
+            return this;
+        }
+
+        public JsonBodyBuilder setHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                headers.remove(name);
+                ArrayList<String> values = new ArrayList<>();
+                values.add(value);
+                headers.put(name, values);
+            }
+            return this;
+        }
+
+        public JsonBodyBuilder headers(Map<String, List<String>> headers) {
+            if(headers != null) {
+                this.headers.putAll(headers);
+            }
+            return this;
         }
 
         public JsonBodyBuilder type(MediaType type) {
@@ -470,14 +610,14 @@ public final class Request {
             return this;
         }
 
-        public JsonBodyBuilder add(String key, String value) {
+        public JsonBodyBuilder addParam(String key, String value) {
             if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
                 this.params.put(key, value);
             }
             return this;
         }
 
-        public JsonBodyBuilder addAll(Map<String, String> parameters) {
+        public JsonBodyBuilder addParams(Map<String, String> parameters) {
             if(parameters != null) {
                 this.params.putAll(parameters);
             }
@@ -501,6 +641,41 @@ public final class Request {
 
         private FileBodyBuilder(Method method) {
             super(method);
+            this.type = MediaType.parse("text/plain");
+        }
+
+        public FileBodyBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public FileBodyBuilder addHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                List<String> values = headers.get(name);
+                if(values == null) {
+                    values = new ArrayList<>();
+                    headers.put(name, values);
+                }
+                values.add(value);
+            }
+            return this;
+        }
+
+        public FileBodyBuilder setHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                headers.remove(name);
+                ArrayList<String> values = new ArrayList<>();
+                values.add(value);
+                headers.put(name, values);
+            }
+            return this;
+        }
+
+        public FileBodyBuilder headers(Map<String, List<String>> headers) {
+            if(headers != null) {
+                this.headers.putAll(headers);
+            }
+            return this;
         }
 
         public FileBodyBuilder type(MediaType type) {
@@ -531,8 +706,43 @@ public final class Request {
 
         private MultiBodyBuilder(Method method) {
             super(method);
+            this.type = MediaType.parse("multipart/form-data");
             this.boundary = UUID.randomUUID().toString();
             this.parts = new ArrayList<>();
+        }
+
+        public MultiBodyBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public MultiBodyBuilder addHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                List<String> values = headers.get(name);
+                if(values == null) {
+                    values = new ArrayList<>();
+                    headers.put(name, values);
+                }
+                values.add(value);
+            }
+            return this;
+        }
+
+        public MultiBodyBuilder setHeader(String name, String value) {
+            if(!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
+                headers.remove(name);
+                ArrayList<String> values = new ArrayList<>();
+                values.add(value);
+                headers.put(name, values);
+            }
+            return this;
+        }
+
+        public MultiBodyBuilder headers(Map<String, List<String>> headers) {
+            if(headers != null) {
+                this.headers.putAll(headers);
+            }
+            return this;
         }
 
         public MultiBodyBuilder boundary(String boundary) {

@@ -1,18 +1,14 @@
 package org.ituns.network.faker;
 
+import org.ituns.network.core.Config;
 import org.ituns.network.core.Logger;
 
-public final class FakerConfig {
-    private Logger logger;
+public final class FakerConfig extends Config {
     private FakerAdapter adapter;
 
     public FakerConfig(Builder builder) {
-        this.logger = builder.logger;
+        super(builder.logger);
         this.adapter = builder.adapter;
-    }
-
-    public Logger logger() {
-        return logger;
     }
 
     public FakerAdapter adapter() {
