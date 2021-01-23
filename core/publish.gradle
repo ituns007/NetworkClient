@@ -1,5 +1,10 @@
 apply plugin: 'maven-publish'
 
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
 publishing {
     publications {
         aar(MavenPublication) {
@@ -7,6 +12,8 @@ publishing {
             groupId PUBLICATIONS_GROUPID
             artifactId PUBLICATIONS_ARTIFACTID
 
+            // Tell maven to prepare the generated "*.jar" file for publishing
+            artifact(sourceJar)
             // Tell maven to prepare the generated "*.aar" file for publishing
             artifact("$buildDir/outputs/aar/" + PUBLICATIONS_ARCHIVEFILE)
 

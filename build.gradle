@@ -19,7 +19,7 @@ allprojects {
             url "http://maven.ituns.org/repository/maven-public/"
         }
         maven {
-            url "http://maven.ituns.org/repository/maven-private/"
+            url "http://maven.ituns.org/repository/maven-public/"
             credentials {
                 username "ituns"
                 password "ituns007!"

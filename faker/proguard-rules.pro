@@ -22,12 +22,5 @@
 -dontoptimize
 -keeppackagenames org.ituns.network.faker
 
--keep class org.ituns.network.faker.FakerAdapter { public <methods>; }
--keep class org.ituns.network.faker.FakerAdapter$Builder { public <methods>; }
--keep class org.ituns.network.faker.FakerClient {
-    public <methods>;
-    protected <methods>;
-}
-
 -keep class org.ituns.network.core.R{ *; }
 -keep class org.ituns.network.core.R$* { public static <fields>; }

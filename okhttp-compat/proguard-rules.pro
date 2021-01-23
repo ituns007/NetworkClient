@@ -22,10 +22,5 @@
 -dontoptimize
 -keeppackagenames org.ituns.network.okhttp.compat
 
--keep class org.ituns.network.okhttp.compat.OkHttpNetworkClient {
-    public <methods>;
-    protected <methods>;
-}
-
 -keep class org.ituns.network.okhttp.compat.R{ *; }
 -keep class org.ituns.network.okhttp.compat.R$* { public static <fields>; }
